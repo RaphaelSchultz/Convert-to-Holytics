@@ -46,10 +46,10 @@ exe = EXE(
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=True,  # Shows console window
+    console=False,  # Hide console window - app runs in background
     disable_windowed_traceback=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=None,  # Add .ico file here if you have one
+    icon='icon.ico',  # Custom icon
 )
