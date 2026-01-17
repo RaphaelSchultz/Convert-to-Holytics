@@ -178,8 +178,6 @@ class ExportService:
                 formatted_lyrics = formatters.formatar_letra(lyrics)
                 
                 with open(file_path, 'w', encoding='utf-8') as f:
-                    f.write(f"Título: {nome or 'Sem título'}\n")
-                    f.write(f"Artista: {nome_album or 'Sem álbum'}\n\n")
                     f.write(formatted_lyrics)
                 
                 files_written += 1
