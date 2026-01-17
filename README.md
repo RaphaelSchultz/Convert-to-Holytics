@@ -1,390 +1,141 @@
-# 🎵 Convert to Holytics
+# Convert-to-Holytics
 
-> **API Flask para exportar músicas do banco de dados Louvor JA para arquivos .txt formatados**
+🎵 **Exportador de Músicas do Louvor JA para Holyrics**
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-3.0.3-green)](https://flask.palletsprojects.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+Aplicação web moderna para exportar letras de músicas do banco de dados do Louvor JA (software Adventista) para arquivos `.txt` formatados, prontos para uso no Holyrics.
 
----
+## ✨ Funcionalidades
 
-## 📋 Descrição
+- ✅ **Interface Web Moderna** - Design inspirado no Supabase Dashboard
+- ✅ **Upload de Banco de Dados** - Importação fácil do database.db
+- ✅ **Exportação em Lote** - Processa todas as músicas de uma vez
+- ✅ **Progresso em Tempo Real** - Acompanhe a exportação ao vivo
+- ✅ **Tabela Interativa** - Pesquise e visualize músicas exportadas
+- ✅ **Preview de Letras** - Modal para visualizar antes de baixar
+- ✅ **Download Individual** - Baixe músicas uma a uma
+- ✅ **Download ZIP** - Baixe todas de uma vez
+- ✅ **Dark Theme** - Interface moderna e confortável
 
-O **Convert to Holytics** é uma API REST construída com Flask que permite exportar letras de músicas do software **Louvor JA** (Jovens Adventistas) para arquivos de texto formatados. O sistema oferece controle completo sobre o processo de exportação, incluindo progresso em tempo real e capacidade de cancelamento.
+## 🚀 Como Usar
 
-### ✨ Features
+### **Opção 1: Executar Localmente**
 
-- ✅ **Exportação Completa**: Extrai todas as músicas do banco de dados Louvor JA
-- ✅ **Formatação Inteligente**: Remove acentos e formata letras em blocos legíveis
-- ✅ **Progresso em Tempo Real**: Acompanhe o andamento via endpoint `/status`
-- ✅ **Cancelamento Controlado**: Pare a exportação a qualquer momento
-- ✅ **Thread-Safe**: Sistema robusto com locks para operações concorrentes
-- ✅ **Logging Completo**: Rastreamento detalhado de todas as operações
-- ✅ **Validação de Segurança**: Proteção contra path traversal attacks
-- ✅ **CORS Habilitado**: Pronto para integração com frontends
-- ✅ **Multi-Plataforma**: Funciona em Windows, Linux e macOS
+```bash
+# 1. Clone o repositório
+git clone https://github.com/RaphaelSchultz/Convert-to-Holytics.git
+cd Convert-to-Holytics
 
----
+# 2. Instale dependências
+pip install -r requirements.txt
 
-## 🚀 Instalação Local
+# 3. Execute
+python run.py
 
-### Pré-requisitos
+# 4. Abra no navegador
+http://localhost:5000
+```
 
-- Python 3.10 ou superior
-- pip (gerenciador de pacotes Python)
+### **Opção 2: Docker**
+
+```bash
+# Build
+docker-compose up --build
+
+# Acesse
+http://localhost:5000
+```
+
+## 📋 Requisitos
+
+- Python 3.9+
+- Flask 3.0+
 - Banco de dados do Louvor JA (`database.db`)
 
-### Passo a Passo
+## 🎯 Workflow
 
-1. **Clone o repositório**
-   ```bash
-   git clone https://github.com/RaphaelSchultz/Convert-to-Holytics.git
-   cd Convert-to-Holytics
-   ```
+1. **Upload** do arquivo `database.db` do Louvor JA
+2. **Clique** em "Iniciar Exportação"
+3. **Aguarde** o processamento (barra de progresso)
+4. **Visualize** a tabela com as músicas exportadas
+5. **Download** individual ou ZIP completo
 
-2. **Crie um ambiente virtual** (recomendado)
-   ```bash
-   # Windows
-   python -m venv venv
-   venv\Scripts\activate
-
-   # Linux/Mac
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-
-3. **Instale as dependências**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Configure as variáveis de ambiente**
-   ```bash
-   # Copie o arquivo de exemplo
-   cp .env.example .env
-   
-   # Edite o .env e ajuste o caminho do banco de dados
-   # Windows: DEFAULT_DB_PATH=C:\Program Files (x86)\Louvor JA\config\database.db
-   # Linux/Mac: Ajuste conforme sua instalação
-   ```
-
-5. **Execute o servidor**
-   ```bash
-   python app.py
-   ```
-
-   O servidor estará disponível em `http://localhost:5000`
-
----
-
-## 📡 API Endpoints
-
-### `GET /`
-Retorna informações sobre a API e endpoints disponíveis.
-
-**Resposta:**
-```json
-{
-  "name": "Convert to Holytics API",
-  "version": "1.0.0",
-  "description": "API para exportar músicas do Louvor JA",
-  "endpoints": { ... }
-}
-```
-
----
-
-### `POST /start`
-Inicia o processo de exportação.
-
-**Body (JSON):**
-```json
-{
-  "db_path": "C:\\Program Files (x86)\\Louvor JA\\config\\database.db"
-}
-```
-
-**Resposta de Sucesso (200):**
-```json
-{
-  "message": "Exportação iniciada",
-  "status": {
-    "running": true,
-    "progress": 0,
-    "total": 0,
-    "message": "Iniciando exportação..."
-  }
-}
-```
-
-**Erros:**
-- `400`: Exportação já em andamento ou caminho inválido
-- `400`: Arquivo não encontrado ou extensão inválida
-
----
-
-### `GET /status`
-Retorna o status atual da exportação.
-
-**Resposta:**
-```json
-{
-  "running": true,
-  "progress": 45,
-  "total": 150,
-  "message": "Exportando música 45 de 150..."
-}
-```
-
----
-
-### `POST /cancel`
-Cancela a exportação em andamento.
-
-**Resposta de Sucesso (200):**
-```json
-{
-  "message": "Solicitação de cancelamento enviada",
-  "status": {
-    "running": false,
-    "message": "Cancelando exportação..."
-  }
-}
-```
-
-**Erros:**
-- `400`: Nenhuma exportação em andamento
-
----
-
-### `GET /health`
-Health check endpoint para monitoramento.
-
-**Resposta:**
-```json
-{
-  "status": "healthy",
-  "service": "convert-to-holytics",
-  "version": "1.0.0"
-}
-```
-
----
-
-## 🐳 Docker (Deployment)
-
-### Build da Imagem
-```bash
-docker build -t convert-to-holytics .
-```
-
-### Executar Container
-```bash
-docker run -p 5000:5000 \
-  -v /path/to/database.db:/app/database.db \
-  -e DEFAULT_DB_PATH=/app/database.db \
-  convert-to-holytics
-```
-
-### Docker Compose
-```bash
-docker-compose up -d
-```
-
----
-
-## ☁️ Deploy em Produção
-
-### Heroku
-
-1. **Login e criação do app**
-   ```bash
-   heroku login
-   heroku create seu-app-name
-   ```
-
-2. **Deploy**
-   ```bash
-   git push heroku main
-   ```
-
-3. **Configurar variáveis de ambiente**
-   ```bash
-   heroku config:set DEFAULT_DB_PATH=/path/to/database.db
-   heroku config:set LOG_LEVEL=INFO
-   ```
-
-### Railway
-
-1. Conecte seu repositório GitHub ao Railway
-2. Configure as variáveis de ambiente no dashboard:
-   - `DEFAULT_DB_PATH`
-   - `PORT` (Railway fornece automaticamente)
-3. Deploy automático a cada push
-
-### Vercel (Limitado para Flask)
-
-> ⚠️ Nota: Vercel é otimizado para serverless. Para Flask, considere Railway ou Heroku.
-
----
-
-## ⚙️ Configuração (.env)
-
-| Variável | Descrição | Padrão |
-|----------|-----------|--------|
-| `FLASK_ENV` | Ambiente (development/production) | `development` |
-| `FLASK_DEBUG` | Modo debug | `True` |
-| `HOST` | Host do servidor | `0.0.0.0` |
-| `PORT` | Porta do servidor | `5000` |
-| `DEFAULT_DB_PATH` | Caminho padrão do banco | Windows: `C:\Program Files (x86)\Louvor JA\config\database.db` |
-| `OUTPUT_DIR` | Diretório de saída | `musicas_txt_formatadas` |
-| `CORS_ORIGINS` | Origens permitidas para CORS | `*` |
-| `LOG_LEVEL` | Nível de log (DEBUG/INFO/WARNING/ERROR) | `INFO` |
-| `LOG_FILE` | Arquivo de log | `app.log` |
-
----
-
-## 📂 Estrutura do Projeto
+## 📁 Estrutura
 
 ```
 Convert-to-Holytics/
-├── app.py                      # API Flask principal
-├── exportar_musicas.py         # Lógica de exportação
-├── requirements.txt            # Dependências Python
-├── .env.example                # Exemplo de configuração
-├── .gitignore                  # Arquivos ignorados pelo Git
-├── Procfile                    # Config para Heroku
-├── README.md                   # Este arquivo
-└── musicas_txt_formatadas/     # Diretório de saída (gerado)
+├── app/                    # Aplicação Flask
+│   ├── routes/            # Rotas e endpoints
+│   ├── services/          # Lógica de negócio
+│   ├── repositories/      # Acesso a dados
+│   └── utils/             # Utilitários
+├── static/                # CSS e JavaScript
+├── templates/             # HTML
+├── musicas_txt_formatadas/ # Arquivos exportados
+└── run.py                 # Entry point
 ```
 
----
+## 🎨 Design
 
-## 🔒 Segurança
+Interface moderna com:
+- **Supabase-inspired** dark theme
+- **Verde vibrante** (#3ECF8E) como cor principal
+- **Tipografia** Inter (Google Fonts)
+- **Componentes** responsivos e acessíveis
 
-O projeto implementa as seguintes medidas de segurança:
+## 📝 Formato dos Arquivos
 
-- ✅ **Validação de Path**: Previne path traversal attacks
-- ✅ **Type Hints**: Validação de tipos em tempo de desenvolvimento
-- ✅ **Queries Parametrizadas**: Proteção contra SQL injection
-- ✅ **Sanitização de Nomes**: Remove caracteres perigosos de nomes de arquivo
-- ✅ **Thread Safety**: Locks para prevenir race conditions
-- ✅ **CORS Configurável**: Controle de origens permitidas
+Os arquivos `.txt` exportados contêm:
+```
+Título: [Nome da Música]
+Artista: [Álbum/Artista]
 
----
-
-## 🐛 Troubleshooting
-
-### Erro: "No module named 'flask_cors'"
-```bash
-pip install flask-cors
+[Letra formatada em estrofes]
 ```
 
-### Erro: "Arquivo não encontrado: database.db"
-Verifique o caminho no `.env` ou no body da requisição POST.
+**Hinário Adventista**: Inclui número da música no nome do arquivo
+- Exemplo: `001 - Santo, Santo, Santo! (Hinario Adventista).txt`
 
-### Erro: "Exportação já em andamento"
-Cancele a exportação atual com `POST /cancel` ou aguarde a conclusão.
+**Outras músicas**: Nome + ID único
+- Exemplo: `Grande e o Senhor - 123.txt`
 
-### Porta 5000 já em uso
-Altere a porta no `.env`:
+## 🔧 Configuração
+
+Variáveis de ambiente (opcional):
 ```env
-PORT=8000
+SECRET_KEY=your-secret-key
+FLASK_ENV=development
+HOST=0.0.0.0
+PORT=5000
 ```
 
----
+## 📦 Deploy
 
-## 📊 Formato dos Arquivos Exportados
-
-Cada música é exportada como um arquivo `.txt` com o seguinte formato:
-
-```
-Título: Nome da Música
-Artista: Nome do Álbum
-
-Estrofe 1
-Linha 1
-Linha 2
-
-Estrofe 2
-Linha 1
-Linha 2
-```
-
-- Nomes de arquivo são sanitizados (sem caracteres especiais)
-- Acentos são removidos
-- Músicas do Hinário Adventista são identificadas com sufixo
-
----
-
-## 🛠️ Desenvolvimento
-
-### Executar em Modo Debug
+### **Heroku**
 ```bash
-export FLASK_DEBUG=True  # Linux/Mac
-set FLASK_DEBUG=True     # Windows
-python app.py
+git push heroku main
 ```
 
-### Logs
-Os logs são salvos em `app.log` e também exibidos no console.
-
----
-
-## 📝 Changelog
-
-### v1.0.0 (Janeiro 2026)
-- ✅ Implementação inicial da API
-- ✅ Thread safety com locks
-- ✅ Sistema de logging completo
-- ✅ Validação de paths
-- ✅ CORS habilitado
-- ✅ Suporte multi-plataforma
-- ✅ Documentação completa
-
----
+### **Docker**
+```bash
+docker build -t convert-to-holytics .
+docker run -p 5000:5000 convert-to-holytics
+```
 
 ## 🤝 Contribuindo
 
-Contribuições são bem-vindas! Por favor:
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/NovaFuncionalidade`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/NovaFuncionalidade`)
-5. Abra um Pull Request
-
----
+Contribuições são bem-vindas! Sinta-se à vontade para:
+- Reportar bugs
+- Sugerir melhorias
+- Enviar pull requests
 
 ## 📄 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto é código aberto e está disponível sob a [MIT License](LICENSE).
+
+## 👨‍💻 Autor
+
+Desenvolvido com ❤️ para a comunidade Adventista
 
 ---
 
-## 👤 Autor
-
-**Raphael Schultz**
-- GitHub: [@RaphaelSchultz](https://github.com/RaphaelSchultz)
-
----
-
-## 🙏 Agradecimentos
-
-- Comunidade Jovens Adventistas
-- Software Louvor JA
-- Comunidade Flask
-
----
-
-## 📞 Suporte
-
-Se você encontrar problemas ou tiver perguntas:
-
-1. Verifique a seção [Troubleshooting](#-troubleshooting)
-2. Consulte os [logs](#-desenvolvimento)
-3. Abra uma [Issue](https://github.com/RaphaelSchultz/Convert-to-Holytics/issues)
-
----
-
-**Feito com ❤️ para a comunidade Adventista**
+**Nota**: Este projeto foi criado para facilitar a exportação de músicas do Louvor JA para o Holyrics. Não é afiliado oficialmente com nenhum dos softwares mencionados.
