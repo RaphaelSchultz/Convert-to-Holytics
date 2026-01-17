@@ -68,6 +68,7 @@
                                 <th>#</th>
                                 <th>Nome do Arquivo</th>
                                 <th>Tamanho</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody id="songsTableBody">
@@ -77,6 +78,23 @@
                 </div>
             </div>
         </main>
+
+        <!-- Lyrics Modal -->
+        <div id="lyricsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Letra da Música</h3>
+                    <button class="modal-close" onclick="closeLyricsModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <pre id="modalLyrics"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeLyricsModal()">Fechar</button>
+                    <button id="modalDownloadBtn" class="btn btn-primary">📥 Baixar</button>
+                </div>
+            </div>
+        </div>
 
         <footer>
             <p>Made with ❤️ for the Adventist community</p>

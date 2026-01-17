@@ -216,8 +216,18 @@ async function loadSongsTable() {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${index + 1}</td>
-                <td class="song-name">${file.filename}</td>
+                <td class="song-name" onclick="viewLyrics('${file.filename}')">${file.filename}</td>
                 <td>${formatFileSize(file.size)}</td>
+                <td>
+                    <div class="action-btns">
+                        <button class="btn-icon" onclick="downloadFile('${file.filename}')" title="Baixar">
+                            📥
+                        </button>
+                        <button class="btn-icon" onclick="viewLyrics('${file.filename}')" title="Ver letra">
+                            👁️
+                        </button>
+                    </div>
+                </td>
             `;
             tbody.appendChild(row);
         });
@@ -267,6 +277,55 @@ function updateSearchCount() {
             searchCount.textContent = `${visible} de ${total} músicas`;
         }
     }
+}
+
+// View lyrics in modal
+async function viewLyrics(filename) {
+    try {
+        const response = await fetch(`${API_BASE}/file/${encodeURIComponent(filename)}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || 'Erro ao carregar letra');
+            return;
+        }
+
+        // Update modal
+        document.getElementById('modalTitle').textContent = filename;
+        document.getElementById('modalLyrics').textContent = data.content;
+        document.getElementById('modalDownloadBtn').onclick = () => downloadFile(filename);
+
+        // Show modal
+        document.getElementById('lyricsModal').classList.add('show');
+
+    } catch (error) {
+        console.error('Error viewing lyrics:', error);
+        alert('Erro ao carregar letra da música');
+    }
+}
+
+// Close lyrics modal
+function closeLyricsModal() {
+    document.getElementById('lyricsModal').classList.remove('show');
+}
+
+// Close modal on click outside
+document.getElementById('lyricsModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'lyricsModal') {
+        closeLyricsModal();
+    }
+});
+
+// Close modal on ESC key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeLyricsModal();
+    }
+});
+
+// Download individual file
+function downloadFile(filename) {
+    window.location.href = `${API_BASE}/file/${encodeURIComponent(filename)}?download=true`;
 }
 
 // Initial status check

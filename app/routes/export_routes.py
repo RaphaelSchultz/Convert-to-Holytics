@@ -213,3 +213,55 @@ def list_exported_files():
             "error": f"Erro ao listar arquivos: {str(e)}"
         }), 500
 
+
+@export_bp.route('/file/<path:filename>', methods=['GET'])
+def get_file(filename):
+    """
+    Get individual file content or download.
+    
+    Args:
+        filename: Name of the file to retrieve
+        
+    Query params:
+        download: If 'true', triggers download instead of preview
+        
+    Returns:
+        File content or download
+    """
+    try:
+        output_dir = Path(config.OUTPUT_DIR)
+        file_path = output_dir / filename
+        
+        # Security: ensure file is within output directory
+        if not file_path.resolve().parent == output_dir.resolve():
+            return jsonify({"error": "Acesso negado"}), 403
+        
+        if not file_path.exists():
+            return jsonify({"error": "Arquivo não encontrado"}), 404
+        
+        # Check if download or preview
+        is_download = request.args.get('download', 'false').lower() == 'true'
+        
+        if is_download:
+            return send_file(
+                file_path,
+                as_attachment=True,
+                download_name=filename,
+                mimetype='text/plain'
+            )
+        else:
+            # Return content as JSON for preview
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            return jsonify({
+                "filename": filename,
+                "content": content
+            }), 200
+        
+    except Exception as e:
+        logger.error(f"Error serving file: {e}", exc_info=True)
+        return jsonify({
+            "error": f"Erro ao acessar arquivo: {str(e)}"
+        }), 500
+
+
