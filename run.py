@@ -1,19 +1,20 @@
 """Application entry point."""
-import os
 import logging
-
 from app import create_app
+from app.config import get_config
 
-# Create Flask application
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+logger = logging.getLogger(__name__)
+
+# Create app instance (for Vercel)
 app = create_app()
 
 if __name__ == '__main__':
-    config = app.config
-    host = config.get('HOST', '0.0.0.0')
-    port = config.get('PORT', 5000)
-    debug = config.get('DEBUG', False)
-    
-    logger = logging.getLogger(__name__)
-    logger.info(f"Starting server on {host}:{port} (debug={debug})")
-    
-    app.run(host=host, port=port, debug=debug)
+    config = get_config()
+    logger.info(f"Starting server on {config.HOST}:{config.PORT} (debug={config.DEBUG})")
+    app.run(host=config.HOST, port=config.PORT, debug=config.DEBUG)
