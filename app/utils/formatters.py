@@ -46,6 +46,7 @@ def sanitize_filename(name: str) -> str:
 def formatar_letra(estrofes: List[Tuple[Optional[str]]]) -> str:
     """
     Formata as estrofes da música em blocos de texto.
+    PRESERVA acentuação original do conteúdo.
     
     Args:
         estrofes: Lista de tuplas contendo o texto das estrofes
@@ -62,7 +63,7 @@ def formatar_letra(estrofes: List[Tuple[Optional[str]]]) -> str:
         if not texto:
             continue
         
-        texto = normalize_unicode(texto)
+        # NÃO normalizar unicode aqui - preservar acentos!
         texto = texto.strip('\n')
         linhas = [linha.strip() for linha in texto.split('\n') if linha.strip()]
         if linhas:
