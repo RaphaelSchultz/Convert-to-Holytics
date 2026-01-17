@@ -1,33 +1,24 @@
-"""Launcher script for standalone executable."""
+"""Launcher - Inicia Flask e abre navegador automaticamente"""
 import os
 import sys
-import logging
 import webbrowser
 import threading
 import time
 from pathlib import Path
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-
-logger = logging.getLogger(__name__)
-
 def open_browser():
-    """Open browser after short delay."""
+    """Abre navegador após 2 segundos"""
     time.sleep(2)
     webbrowser.open('http://127.0.0.1:5000')
 
 def main():
-    """Main entry point for standalone executable."""
+    """Entry point"""
     try:
         # Import Flask app
         from app import create_app
         
-        logger.info("Iniciando Convert-to-Holytics...")
-        logger.info("Criando aplicação Flask...")
+        print("Iniciando Convert-to-Holytics...")
+        print("Aguarde, abrindo navegador...")
         
         # Create app
         app = create_app()
@@ -36,10 +27,7 @@ def main():
         browser_thread = threading.Thread(target=open_browser, daemon=True)
         browser_thread.start()
         
-        logger.info("Abrindo navegador em http://127.0.0.1:5000")
-        logger.info("Pressione Ctrl+C para encerrar")
-        
-        # Run Flask app
+        # Run Flask (sem debug e reloader para .exe)
         app.run(
             host='127.0.0.1',
             port=5000,
@@ -48,7 +36,7 @@ def main():
         )
         
     except Exception as e:
-        logger.error(f"Erro ao iniciar aplicação: {e}", exc_info=True)
+        print(f"Erro: {e}")
         input("Pressione Enter para sair...")
         sys.exit(1)
 

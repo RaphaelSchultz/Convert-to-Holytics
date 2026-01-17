@@ -1,0 +1,11 @@
+# Core Framework
+Flask==3.0.3
+
+# Production Server (CRITICAL: was missing)
+gunicorn==21.2.0
+
+# Configuration Management
+python-dotenv==1.0.0
+
+# CORS Support for Frontend
+flask-cors==4.0.0

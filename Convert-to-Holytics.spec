@@ -2,10 +2,10 @@
 
 
 a = Analysis(
-    ['gui_app.py'],
+    ['launcher.py'],
     pathex=[],
     binaries=[],
-    datas=[('app', 'app')],
+    datas=[('app', 'app'), ('static', 'static'), ('templates', 'templates')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -35,5 +35,4 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['icon.ico'],
 )
