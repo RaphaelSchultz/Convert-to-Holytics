@@ -66,6 +66,13 @@ def formatar_letra(estrofes: List[Tuple[Optional[str]]]) -> str:
         # NÃO normalizar unicode aqui - preservar acentos!
         texto = texto.strip('\n')
         linhas = [linha.strip() for linha in texto.split('\n') if linha.strip()]
+        
+        # SAFETY FILTER: Remover metadados se existirem no texto original do banco
+        linhas = [
+            l for l in linhas 
+            if not l.lstrip().lower().startswith(('título:', 'titulo:', 'artista:', 'artist:'))
+        ]
+        
         if linhas:
             blocos.append('\n'.join(linhas))
     
