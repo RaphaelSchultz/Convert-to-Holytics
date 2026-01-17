@@ -143,10 +143,12 @@ class ExportService:
                 lyrics = self.repository.get_lyrics_by_music_id(id_music)
                 
                 # Generate filename
+                song_name = nome_com or nome or 'Sem_título'
+                
                 if nome_album and "Hinário Adventista" in nome_album:
-                    filename_base = f"{nome_com or nome or 'Sem_título'} (Hinario Adventista)"
+                    filename_base = f"{song_name} (Hinario Adventista) - {id_music}"
                 else:
-                    filename_base = f"{nome_com or nome or 'Sem_título'}{id_music}"
+                    filename_base = f"{song_name} - {id_music}"
                 
                 filename = formatters.sanitize_filename(filename_base)
                 file_path = output_dir / f"{filename}.txt"
