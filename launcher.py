@@ -17,7 +17,10 @@ def main():
         # Import Flask app
         from app import create_app
         
+        print("========================================")
         print("Iniciando Convert-to-Holytics...")
+        print("Versão: 2026-01-17 - SEM METADADOS (CLEAN)")
+        print("========================================")
         print("Aguarde, abrindo navegador...")
         
         # Create app
