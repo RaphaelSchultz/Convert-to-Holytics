@@ -11,6 +11,9 @@ load_dotenv()
 class Config:
     """Base configuration class."""
     
+    # Base directory of the project
+    BASE_DIR = Path(__file__).resolve().parent
+    
     # Flask
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
     
@@ -21,12 +24,12 @@ class Config:
     # CORS
     CORS_ORIGINS = os.getenv('CORS_ORIGINS', '*').split(',')
     
+    # Output directory for exported files (relative to project root)
+    OUTPUT_DIR = Path(os.getenv('OUTPUT_DIR', BASE_DIR / ".." / "musicas_txt_formatadas"))
+    
     # Logging
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
     LOG_FILE = os.getenv('LOG_FILE', 'app.log')
-    
-    # Export
-    OUTPUT_DIR = Path(os.getenv('OUTPUT_DIR', 'musicas_txt_formatadas'))
     
     # Database
     @staticmethod
