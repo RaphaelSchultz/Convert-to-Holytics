@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Exporte músicas do Louvor JA para arquivos de texto formatados">
     <title>Convert to Holytics - Exportador de Músicas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
@@ -32,8 +35,12 @@
                 </div>
 
                 <div class="actions">
-                    <button id="startBtn" class="btn btn-primary">Iniciar Exportação</button>
-                    <button id="cancelBtn" class="btn btn-secondary" disabled>Cancelar</button>
+                    <button id="startBtn" class="btn btn-primary">
+                        <span class="btn-text">Iniciar Exportação</span>
+                    </button>
+                    <button id="cancelBtn" class="btn btn-secondary" disabled>
+                        <span class="btn-text">Cancelar</span>
+                    </button>
                 </div>
             </div>
 
@@ -49,7 +56,9 @@
             <div class="card" id="resultsCard" style="display: none;">
                 <h2>Resultados</h2>
                 <p id="resultsMessage"></p>
-                <button id="downloadBtn" class="btn btn-success">📥 Download Resultados</button>
+                <button id="downloadBtn" class="btn btn-success">
+                    <span class="btn-text">📥 Download Resultados</span>
+                </button>
             </div>
 
             <!-- Exported Songs Table -->

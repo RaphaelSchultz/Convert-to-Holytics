@@ -33,9 +33,25 @@ function handleFileSelect(event) {
     }
 }
 
+// Show button loading state
+function setButtonLoading(button, loading) {
+    if (loading) {
+        button.classList.add('loading');
+        const spinner = document.createElement('span');
+        spinner.className = 'spinner';
+        button.prepend(spinner);
+    } else {
+        button.classList.remove('loading');
+        const spinner = button.querySelector('.spinner');
+        if (spinner) spinner.remove();
+    }
+}
+
 // Start export
 async function startExport() {
     let db_path = dbPath.value.trim();
+
+    setButtonLoading(startBtn, true);
 
     try {
         // Check if user selected a file to upload
@@ -43,6 +59,7 @@ async function startExport() {
             statusText.textContent = 'Enviando arquivo...';
             const uploadedPath = await uploadFile(fileInput.files[0]);
             if (!uploadedPath) {
+                setButtonLoading(startBtn, false);
                 return; // Error already shown
             }
             db_path = uploadedPath;
@@ -60,6 +77,7 @@ async function startExport() {
 
         if (!response.ok) {
             alert(data.error || 'Erro ao iniciar exportação');
+            setButtonLoading(startBtn, false);
             return;
         }
 
@@ -75,6 +93,7 @@ async function startExport() {
     } catch (error) {
         console.error('Error starting export:', error);
         alert('Erro ao conectar com o servidor');
+        setButtonLoading(startBtn, false);
     }
 }
 
@@ -107,6 +126,8 @@ async function uploadFile(file) {
 
 // Cancel export
 async function cancelExport() {
+    setButtonLoading(cancelBtn, true);
+
     try {
         const response = await fetch(`${API_BASE}/cancel`, {
             method: 'POST'
@@ -118,9 +139,12 @@ async function cancelExport() {
             alert(data.error || 'Erro ao cancelar exportação');
         }
 
+        setButtonLoading(cancelBtn, false);
+
     } catch (error) {
         console.error('Error cancelling export:', error);
         alert('Erro ao conectar com o servidor');
+        setButtonLoading(cancelBtn, false);
     }
 }
 
@@ -160,6 +184,7 @@ async function updateStatus() {
         // Check if export finished
         if (!data.running && isExporting) {
             isExporting = false;
+            setButtonLoading(startBtn, false);
             startBtn.disabled = false;
             cancelBtn.disabled = true;
             stopStatusPolling();
@@ -188,13 +213,20 @@ async function updateStatus() {
 }
 
 // Download results as ZIP file
-document.getElementById('downloadBtn')?.addEventListener('click', async () => {
+document.getElementById('downloadBtn')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    setButtonLoading(btn, true);
+
     try {
         // Trigger download from server
         window.location.href = `${API_BASE}/download`;
+
+        // Remove loading after a delay
+        setTimeout(() => setButtonLoading(btn, false), 1000);
     } catch (error) {
         console.error('Error downloading ZIP:', error);
         alert('Erro ao baixar arquivo ZIP');
+        setButtonLoading(btn, false);
     }
 });
 
@@ -274,19 +306,27 @@ function updateSearchCount() {
         if (visible === total) {
             searchCount.textContent = `${total} músicas`;
         } else {
-            searchCount.textContent = `${visible} de ${total} músicas`;
+            searchCount.textContent = `${visible} de ${total}`;
         }
     }
 }
 
 // View lyrics in modal
 async function viewLyrics(filename) {
+    const modal = document.getElementById('lyricsModal');
+    modal.classList.add('show');
+
+    // Show loading in modal
+    document.getElementById('modalTitle').textContent = 'Carregando...';
+    document.getElementById('modalLyrics').textContent = 'Carregando letra...';
+
     try {
         const response = await fetch(`${API_BASE}/file/${encodeURIComponent(filename)}`);
         const data = await response.json();
 
         if (!response.ok) {
             alert(data.error || 'Erro ao carregar letra');
+            closeLyricsModal();
             return;
         }
 
@@ -295,12 +335,10 @@ async function viewLyrics(filename) {
         document.getElementById('modalLyrics').textContent = data.content;
         document.getElementById('modalDownloadBtn').onclick = () => downloadFile(filename);
 
-        // Show modal
-        document.getElementById('lyricsModal').classList.add('show');
-
     } catch (error) {
         console.error('Error viewing lyrics:', error);
         alert('Erro ao carregar letra da música');
+        closeLyricsModal();
     }
 }
 
