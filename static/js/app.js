@@ -23,6 +23,20 @@ cancelBtn.addEventListener('click', cancelExport);
 browseBtn.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', handleFileSelect);
 
+// Use default path button
+const useDefaultBtn = document.getElementById('useDefaultBtn');
+if (useDefaultBtn) {
+    useDefaultBtn.addEventListener('click', useDefaultPath);
+}
+
+// Use default Louvor JA path
+function useDefaultPath() {
+    const defaultPath = 'C:\\Program Files (x86)\\Louvor JA\\config\\database.db';
+    dbPath.value = defaultPath;
+    dbPath.dataset.file = '';
+    dbPath.dataset.uploadFile = 'false';
+}
+
 // Handle file selection
 function handleFileSelect(event) {
     const file = event.target.files[0];
