@@ -215,6 +215,104 @@ footer a:hover {
     text-decoration: underline;
 }
 
+/* Search Box */
+.search-box {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.search-count {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Table */
+.table-container {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+}
+
+thead th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background-color 0.2s;
+}
+
+tbody tr:hover {
+    background-color: rgba(124, 58, 237, 0.05);
+}
+
+tbody tr.hidden {
+    display: none;
+}
+
+tbody td {
+    padding: 0.875rem 1rem;
+    font-size: 0.95rem;
+}
+
+tbody td:first-child {
+    font-weight: 600;
+    color: var(--secondary);
+    width: 60px;
+}
+
+tbody td:last-child {
+    color: var(--secondary);
+    font-size: 0.85rem;
+    width: 100px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+    thead th,
+    tbody td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    tbody td:first-child {
+        width: 40px;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .actions {

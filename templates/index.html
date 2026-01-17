@@ -51,6 +51,31 @@
                 <p id="resultsMessage"></p>
                 <button id="downloadBtn" class="btn btn-success">📥 Download Resultados</button>
             </div>
+
+            <!-- Exported Songs Table -->
+            <div class="card" id="songsTableCard" style="display: none;">
+                <h2>🎵 Músicas Exportadas</h2>
+
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 Pesquisar por número ou nome...">
+                    <span id="searchCount" class="search-count"></span>
+                </div>
+
+                <div class="table-container">
+                    <table id="songsTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nome do Arquivo</th>
+                                <th>Tamanho</th>
+                            </tr>
+                        </thead>
+                        <tbody id="songsTableBody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </main>
 
         <footer>

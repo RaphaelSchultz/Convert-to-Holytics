@@ -178,3 +178,38 @@ def download_results():
         return jsonify({
             "error": f"Erro ao criar arquivo ZIP: {str(e)}"
         }), 500
+
+
+@export_bp.route('/list', methods=['GET'])
+def list_exported_files():
+    """
+    List all exported music files.
+    
+    Returns:
+        JSON with list of exported files and metadata
+    """
+    try:
+        output_dir = Path(config.OUTPUT_DIR)
+        
+        if not output_dir.exists():
+            return jsonify({"files": []}), 200
+        
+        files = []
+        for txt_file in sorted(output_dir.glob('*.txt')):
+            files.append({
+                "filename": txt_file.name,
+                "size": txt_file.stat().st_size,
+                "modified": txt_file.stat().st_mtime
+            })
+        
+        return jsonify({
+            "total": len(files),
+            "files": files
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error listing files: {e}", exc_info=True)
+        return jsonify({
+            "error": f"Erro ao listar arquivos: {str(e)}"
+        }), 500
+

@@ -168,6 +168,9 @@ async function updateStatus() {
             if (data.message.includes('✅')) {
                 resultsCard.style.display = 'block';
                 resultsMessage.textContent = data.message;
+
+                // Load songs table
+                setTimeout(() => loadSongsTable(), 500);
             }
         }
 
@@ -194,6 +197,77 @@ document.getElementById('downloadBtn')?.addEventListener('click', async () => {
         alert('Erro ao baixar arquivo ZIP');
     }
 });
+
+// Load and display exported songs table
+async function loadSongsTable() {
+    try {
+        const response = await fetch(`${API_BASE}/list`);
+        const data = await response.json();
+
+        if (!response.ok || !data.files || data.files.length === 0) {
+            document.getElementById('songsTableCard').style.display = 'none';
+            return;
+        }
+
+        const tbody = document.getElementById('songsTableBody');
+        tbody.innerHTML = '';
+
+        data.files.forEach((file, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td class="song-name">${file.filename}</td>
+                <td>${formatFileSize(file.size)}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        document.getElementById('songsTableCard').style.display = 'block';
+        updateSearchCount();
+
+    } catch (error) {
+        console.error('Error loading songs table:', error);
+    }
+}
+
+// Format file size
+function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+// Search/filter table
+document.getElementById('searchInput')?.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#songsTableBody tr');
+
+    rows.forEach(row => {
+        const fileName = row.querySelector('.song-name').textContent.toLowerCase();
+        if (fileName.includes(searchTerm)) {
+            row.classList.remove('hidden');
+        } else {
+            row.classList.add('hidden');
+        }
+    });
+
+    updateSearchCount();
+});
+
+// Update search result count
+function updateSearchCount() {
+    const total = document.querySelectorAll('#songsTableBody tr').length;
+    const visible = document.querySelectorAll('#songsTableBody tr:not(.hidden)').length;
+    const searchCount = document.getElementById('searchCount');
+
+    if (searchCount) {
+        if (visible === total) {
+            searchCount.textContent = `${total} músicas`;
+        } else {
+            searchCount.textContent = `${visible} de ${total} músicas`;
+        }
+    }
+}
 
 // Initial status check
 updateStatus();
