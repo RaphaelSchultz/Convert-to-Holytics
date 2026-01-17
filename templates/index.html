@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Exporte músicas do Louvor JA para arquivos de texto formatados">
+    <title>Convert to Holytics - Exportador de Músicas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 Convert to Holytics</h1>
+            <p class="subtitle">Exportador de Músicas do Louvor JA</p>
+        </header>
+
+        <main>
+            <div class="card">
+                <h2>Configuração</h2>
+                <div class="form-group">
+                    <label for="dbPath">Caminho do Banco de Dados</label>
+                    <div class="input-group">
+                        <input type="text" id="dbPath"
+                            placeholder="C:\Program Files (x86)\Louvor JA\config\database.db">
+                        <button type="button" id="browseBtn" class="btn-browse">📁 Procurar</button>
+                    </div>
+                    <input type="file" id="fileInput" accept=".db,.sqlite,.sqlite3" style="display: none;">
+                    <small>Selecione o arquivo database.db do Louvor JA ou deixe vazio para usar o caminho
+                        padrão</small>
+                </div>
+
+                <div class="actions">
+                    <button id="startBtn" class="btn btn-primary">Iniciar Exportação</button>
+                    <button id="cancelBtn" class="btn btn-secondary" disabled>Cancelar</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Progresso</h2>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <p class="status-text" id="statusText">Aguardando início...</p>
+                <p class="progress-text" id="progressText">0 / 0 músicas</p>
+            </div>
+
+            <div class="card" id="resultsCard" style="display: none;">
+                <h2>Resultados</h2>
+                <p id="resultsMessage"></p>
+                <button id="downloadBtn" class="btn btn-success">📥 Download Resultados</button>
+            </div>
+        </main>
+
+        <footer>
+            <p>Made with ❤️ for the Adventist community</p>
+            <p><a href="https://github.com/RaphaelSchultz/Convert-to-Holytics" target="_blank">GitHub</a> | <a
+                    href="/health">Health Check</a></p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>

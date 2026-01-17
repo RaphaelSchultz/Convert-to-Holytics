@@ -1,0 +1,14 @@
+# Development dependencies for testing and code quality
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-flask>=1.2.0
+
+# Code Quality
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.5.0
+
+# Development utilities
+ipython>=8.12.0

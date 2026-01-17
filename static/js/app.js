@@ -1,0 +1,199 @@
+// Application state
+let isExporting = false;
+let statusInterval = null;
+
+// DOM elements
+const startBtn = document.getElementById('startBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+const dbPath = document.getElementById('dbPath');
+const browseBtn = document.getElementById('browseBtn');
+const fileInput = document.getElementById('fileInput');
+const progressBar = document.getElementById('progressBar');
+const statusText = document.getElementById('statusText');
+const progressText = document.getElementById('progressText');
+const resultsCard = document.getElementById('resultsCard');
+const resultsMessage = document.getElementById('resultsMessage');
+
+// API endpoint base
+const API_BASE = '/api';
+
+// Event Listeners
+startBtn.addEventListener('click', startExport);
+cancelBtn.addEventListener('click', cancelExport);
+browseBtn.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', handleFileSelect);
+
+// Handle file selection
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+        dbPath.value = file.name;
+        dbPath.dataset.file = 'selected';
+        dbPath.dataset.uploadFile = 'true';
+    }
+}
+
+// Start export
+async function startExport() {
+    let db_path = dbPath.value.trim();
+
+    try {
+        // Check if user selected a file to upload
+        if (dbPath.dataset.uploadFile === 'true' && fileInput.files.length > 0) {
+            statusText.textContent = 'Enviando arquivo...';
+            const uploadedPath = await uploadFile(fileInput.files[0]);
+            if (!uploadedPath) {
+                return; // Error already shown
+            }
+            db_path = uploadedPath;
+        }
+
+        const response = await fetch(`${API_BASE}/start`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ db_path: db_path || undefined })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || 'Erro ao iniciar exportação');
+            return;
+        }
+
+        // Update UI
+        isExporting = true;
+        startBtn.disabled = true;
+        cancelBtn.disabled = false;
+        resultsCard.style.display = 'none';
+
+        // Start polling status
+        startStatusPolling();
+
+    } catch (error) {
+        console.error('Error starting export:', error);
+        alert('Erro ao conectar com o servidor');
+    }
+}
+
+// Upload file to server
+async function uploadFile(file) {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch(`${API_BASE}/upload`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || 'Erro ao enviar arquivo');
+            return null;
+        }
+
+        return data.filepath;
+
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        alert('Erro ao enviar arquivo para o servidor');
+        return null;
+    }
+}
+
+// Cancel export
+async function cancelExport() {
+    try {
+        const response = await fetch(`${API_BASE}/cancel`, {
+            method: 'POST'
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || 'Erro ao cancelar exportação');
+        }
+
+    } catch (error) {
+        console.error('Error cancelling export:', error);
+        alert('Erro ao conectar com o servidor');
+    }
+}
+
+// Start polling status
+function startStatusPolling() {
+    // Poll every 500ms
+    statusInterval = setInterval(updateStatus, 500);
+}
+
+// Stop polling
+function stopStatusPolling() {
+    if (statusInterval) {
+        clearInterval(statusInterval);
+        statusInterval = null;
+    }
+}
+
+// Update status from server
+async function updateStatus() {
+    try {
+        const response = await fetch(`${API_BASE}/status`);
+        const data = await response.json();
+
+        // Update progress bar
+        if (data.total > 0) {
+            const percentage = (data.progress / data.total) * 100;
+            progressBar.style.width = `${percentage}%`;
+            progressText.textContent = `${data.progress} / ${data.total} músicas`;
+        } else {
+            progressBar.style.width = '0%';
+            progressText.textContent = '0 / 0 músicas';
+        }
+
+        // Update status text
+        statusText.textContent = data.message;
+
+        // Check if export finished
+        if (!data.running && isExporting) {
+            isExporting = false;
+            startBtn.disabled = false;
+            cancelBtn.disabled = true;
+            stopStatusPolling();
+
+            // Show results
+            if (data.message.includes('✅')) {
+                resultsCard.style.display = 'block';
+                resultsMessage.textContent = data.message;
+            }
+        }
+
+        // Add/remove loading animation
+        if (data.running) {
+            progressBar.classList.add('loading');
+        } else {
+            progressBar.classList.remove('loading');
+        }
+
+    } catch (error) {
+        console.error('Error updating status:', error);
+        // Don't stop polling on error, might be temporary
+    }
+}
+
+// Download results as ZIP file
+document.getElementById('downloadBtn')?.addEventListener('click', async () => {
+    try {
+        // Trigger download from server
+        window.location.href = `${API_BASE}/download`;
+    } catch (error) {
+        console.error('Error downloading ZIP:', error);
+        alert('Erro ao baixar arquivo ZIP');
+    }
+});
+
+// Initial status check
+updateStatus();
