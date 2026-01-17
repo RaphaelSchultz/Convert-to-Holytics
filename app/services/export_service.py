@@ -120,10 +120,17 @@ class ExportService:
                 self._set_final_status("⚠️ Nenhuma música encontrada na view LISTA_MUSICAS.")
                 return
             
-            # Create output directory
+            # Create output directory (clean if exists)
             if output_dir is None:
                 output_dir = Path("musicas_txt_formatadas")
-            output_dir.mkdir(exist_ok=True)
+            
+            # Clean existing files to avoid accumulation
+            if output_dir.exists():
+                for txt_file in output_dir.glob('*.txt'):
+                    txt_file.unlink()
+                logger.info(f"Cleaned existing files from {output_dir}")
+            else:
+                output_dir.mkdir(exist_ok=True)
             
             logger.info(f"Exporting {total_musics} musics to {output_dir}")
             
