@@ -135,6 +135,9 @@ class ExportService:
             logger.info(f"Exporting {total_musics} musics to {output_dir}")
             
             # Export each music
+            used_filenames = set()  # Track filenames to avoid duplicates
+            files_written = 0
+            
             for idx, (nome_com, nome_album, nome, faixa, id_music) in enumerate(musics, 1):
                 # Check for cancellation
                 if self._should_cancel():
@@ -158,6 +161,15 @@ class ExportService:
                     filename_base = f"{song_name} - {id_music}"
                 
                 filename = formatters.sanitize_filename(filename_base)
+                
+                # Ensure unique filename
+                original_filename = filename
+                counter = 1
+                while filename in used_filenames:
+                    filename = f"{original_filename}_{counter}"
+                    counter += 1
+                
+                used_filenames.add(filename)
                 file_path = output_dir / f"{filename}.txt"
                 
                 # Format and write lyrics
@@ -168,11 +180,12 @@ class ExportService:
                     f.write(f"Artista: {nome_album or 'Sem álbum'}\n\n")
                     f.write(formatted_lyrics)
                 
+                files_written += 1
                 logger.debug(f"Exported: {filename}")
             
             # Success
-            self._set_final_status(f"✅ Exportação finalizada com sucesso! {total_musics} músicas exportadas.")
-            logger.info(f"Export completed successfully: {total_musics} musics")
+            self._set_final_status(f"✅ Exportação finalizada com sucesso! {files_written} músicas exportadas.")
+            logger.info(f"Export completed successfully: {files_written} musics")
             
         except Exception as e:
             error_msg = f"Erro durante exportação: {str(e)}"
