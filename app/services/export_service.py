@@ -156,11 +156,8 @@ class ExportService:
                 song_name = nome_com or nome or 'Sem_título'
                 
                 if nome_album and "Hinário Adventista" in nome_album:
-                    # Para Hinário: apenas número da faixa + nome (sem ID, pois nome já está completo)
-                    if faixa:
-                        filename_base = f"{faixa} - {song_name}"
-                    else:
-                        filename_base = song_name
+                    # Para Hinário: nome já vem completo do banco (ex: "001 - Santo, Santo, Santo!")
+                    filename_base = song_name
                 else:
                     # Outras músicas: nome + ID para garantir unicidade
                     filename_base = f"{song_name} - {id_music}"
